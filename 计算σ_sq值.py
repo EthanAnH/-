@@ -1,4 +1,4 @@
-def calculate_sigma_sq(Nq, Mq, As, h0, type_of_case, e0, gamma_f=0, b_p=0, b=0, a_s=0):
+def calculate_sigma_sq(Nq, Mq, As, h0, type_of_case, e0, gamma_f, b_p, b, a_s):
     """
     计算σ_sq值。
 
@@ -27,34 +27,47 @@ def calculate_sigma_sq(Nq, Mq, As, h0, type_of_case, e0, gamma_f=0, b_p=0, b=0, 
         sigma_sq = Mq / (0.87 * h0 * As)
     elif type_of_case == 4:
         # 第四种情况：偏压
-        # 计算η_s和e的值
-        eta_s = 1  # 假设l0/h <= 14，则η_s = 1，对于l0/h > 14的情况，需要另外计算
-        e = eta_s * e0 + gamma_f  # γs初步假设为0，如果有具体值需进行计算
-        # 计算z的值
+        eta_s = 1  # 这里假设l0/h <= 14，则η_s = 1
+        e = eta_s * e0 + gamma_f
         z = 0.87 * h0 - 0.12 * (1 - gamma_f) * (h0 / e) ** 2
-        # 确保z不超过限制
         z = min(z, 0.87 * h0)
-        # 计算σ_sq的值
         sigma_sq = Nq * (e - z) / (As * z)
     else:
         raise ValueError("Invalid type_of_case. Must be 1, 2, 3, or 4.")
-
     return sigma_sq
 
 
-# 示例使用函数
-# 在实际应用中，需要将 ... 替换为具体数值或者通过用户输入获取
-Nq = float(input("请输入准永久组合下的轴力 Nq (kN): "))  # 从用户那里获得或计算得到的准永久组合下的轴力
-Mq = float(input("请输入准永久组合下的弯矩 Mq (kN·m): "))  # 从用户那里获得或计算得到的准永久组合下的弯矩
-As = float(input("请输入钢筋截面积 As (mm^2): "))  # 钢筋截面积
-h0 = float(input("请输入有效高度 h0 (mm): "))  # 有效高度
+# 以下是函数使用示例
+# 获取用户输入的参数
+Nq = float(input("请输入准永久组合下的轴力 Nq (kN): "))
+Mq = float(input("请输入准永久组合下的弯矩 Mq (kN·m): "))
+As = float(input("请输入钢筋截面积 As (mm^2): "))
+h0 = float(input("请输入有效高度 h0 (mm): "))
+e0 = float(input("请输入原始偏心距 e0 (mm): "))
+gamma_f = float(input("请输入安全系数 gamma_f: "))
+b_p = float(input("请输入梁的受压区宽度 b_p: "))
+b = float(input("请输入梁的宽度 b: "))
+a_s = float(input("请输入受拉钢筋合力点到截面受压边缘的距离 a_s: "))
 
-# 获取用户定义的计算情况类型
-type_of_case = input("请输入计算情况类型（例如 '普通', '偏心', '悬挑'）: ")
+# 提示用户输入计算情况类型
+print("请选择计算情况类型：")
+print("1 - 普通")
+print("2 - 偏心")
+print("3 - 悬挑")
+print("4 - 偏压")
+type_of_case = int(input("请输入对应的数字 (1, 2, 3, 或 4): "))
 
-# 根据 type_of_case 的值，接下来的代码会进行相应的计算
-# ...
+# 检查用户输入是否有效
+if type_of_case not in [1, 2, 3, 4]:
+    raise ValueError("Invalid type_of_case. Must be 1, 2, 3, or 4.")
+# 调用函数并传递所有必要的参数
+sigma_sq_result = calculate_sigma_sq(
+    Nq, Mq, As, h0, type_of_case, e0, gamma_f, b_p, b, a_s
+)
+print(f"σ_sq = {sigma_sq_result}")
 
-
-sigma_sq_result = calculate_sigma_sq(Nq, Mq, As, h0, type_of_case)
+# 调用函数并传递所有必要的参数
+sigma_sq_result = calculate_sigma_sq(
+    Nq, Mq, As, h0, type_of_case, e0, gamma_f, b_p, b, a_s
+)
 print(f"σ_sq = {sigma_sq_result}")
